@@ -1,0 +1,38 @@
+name: Build Cascade for Windows (native)
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Publish (self-contained x64)
+        run: dotnet publish Cascade.csproj -c Release -r win-x64 --self-contained true -o publish
+      - name: Trim
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force publish\libvlc\win-x86 -ErrorAction SilentlyContinue
+          Get-ChildItem publish -Recurse -Filter *.pdb | Remove-Item -Force
+      - name: Portable zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path portable\Cascade | Out-Null
+          Copy-Item publish\* portable\Cascade -Recurse
+          "" | Out-File portable\Cascade\portable.txt
+          Compress-Archive -Path portable\Cascade -DestinationPath Cascade-Portable.zip
+      - name: Installer (Inno Setup)
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DPublishDir=$PWD\publish" installer\Cascade.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cascade-Windows
+          path: |
+            installer-out/*.exe
+            Cascade-Portable.zip
