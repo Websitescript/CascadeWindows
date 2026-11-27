@@ -1,0 +1,13 @@
+<Window x:Class="Cascade.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Cascade" Width="1280" Height="800" MinWidth="940" MinHeight="620"
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource Bg}" AllowDrop="True"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        FontFamily="Segoe UI Variable Text, Segoe UI" Icon="Assets/icon.ico">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="60" ResizeBorderThickness="6" GlassFrameThickness="0"
+                      CornerRadius="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+    <Grid x:Name="Root"/>
+</Window>
